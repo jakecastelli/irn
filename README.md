@@ -48,3 +48,16 @@ python run_sample.py
 * Training code for MS-COCO
 * Code refactoring
 * IRNet v2
+
+## Custom
+https://github.com/jakecastelli/irn.git
+cd irn
+pip install -r requirements.txt
+mkdir voc12_root
+cd voc12_root
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
+tar xvf VOCtrainval_11-May-2012.tar
+cd ../
+python run_sample.py --voc12_root "./voc12_root/VOCdevkit/VOC2012"
+
+Note - torchvision works on 0.5 with torch version 1.4.0
