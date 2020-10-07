@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 
 from misc import pyutils
 
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     # Inter-pixel Relation Network (IRNet)
     parser.add_argument("--irn_network", default="net.resnet50_irn", type=str)
     parser.add_argument("--irn_crop_size", default=512, type=int)
-    parser.add_argument("--irn_batch_size", default=32, type=int)
+    parser.add_argument("--irn_batch_size", default=16, type=int)
     parser.add_argument("--irn_num_epoches", default=3, type=int)
     parser.add_argument("--irn_learning_rate", default=0.1, type=float)
     parser.add_argument("--irn_weight_decay", default=1e-4, type=float)
@@ -73,66 +74,71 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    os.makedirs("sess", exist_ok=True)
-    os.makedirs(args.cam_out_dir, exist_ok=True)
-    os.makedirs(args.ir_label_out_dir, exist_ok=True)
-    os.makedirs(args.sem_seg_out_dir, exist_ok=True)
-    os.makedirs(args.ins_seg_out_dir, exist_ok=True)
+    for i in range(5,10):
+        os.mkdirs("../jakeresults/irnet-result-"+i)
 
-    pyutils.Logger(args.log_name + '.log')
-    print(vars(args))
+        os.makedirs("sess", exist_ok=True)
+        os.makedirs(args.cam_out_dir, exist_ok=True)
+        os.makedirs(args.ir_label_out_dir, exist_ok=True)
+        os.makedirs(args.sem_seg_out_dir, exist_ok=True)
+        os.makedirs(args.ins_seg_out_dir, exist_ok=True)
 
-    if args.train_cam_pass is True:
-        import step.train_cam
+        pyutils.Logger(args.log_name + '.log')
+        print(vars(args))
 
-        timer = pyutils.Timer('step.train_cam:')
-        step.train_cam.run(args)
+        if args.train_cam_pass is True:
+            import step.train_cam
 
-    if args.make_cam_pass is True:
-        import step.make_cam
+            timer = pyutils.Timer('step.train_cam:')
+            step.train_cam.run(args)
 
-        timer = pyutils.Timer('step.make_cam:')
-        step.make_cam.run(args)
+        if args.make_cam_pass is True:
+            import step.make_cam
 
-    if args.eval_cam_pass is True:
-        import step.eval_cam
+            timer = pyutils.Timer('step.make_cam:')
+            step.make_cam.run(args)
 
-        timer = pyutils.Timer('step.eval_cam:')
-        step.eval_cam.run(args)
+        if args.eval_cam_pass is True:
+            import step.eval_cam
 
-    if args.cam_to_ir_label_pass is True:
-        import step.cam_to_ir_label
+            timer = pyutils.Timer('step.eval_cam:')
+            step.eval_cam.run(args)
 
-        timer = pyutils.Timer('step.cam_to_ir_label:')
-        step.cam_to_ir_label.run(args)
+        if args.cam_to_ir_label_pass is True:
+            import step.cam_to_ir_label
 
-    if args.train_irn_pass is True:
-        import step.train_irn
+            timer = pyutils.Timer('step.cam_to_ir_label:')
+            step.cam_to_ir_label.run(args)
 
-        timer = pyutils.Timer('step.train_irn:')
-        step.train_irn.run(args)
+        if args.train_irn_pass is True:
+            import step.train_irn
 
-    if args.make_ins_seg_pass is True:
-        import step.make_ins_seg_labels
+            timer = pyutils.Timer('step.train_irn:')
+            step.train_irn.run(args)
 
-        timer = pyutils.Timer('step.make_ins_seg_labels:')
-        step.make_ins_seg_labels.run(args)
+        if args.make_ins_seg_pass is True:
+            import step.make_ins_seg_labels
 
-    if args.eval_ins_seg_pass is True:
-        import step.eval_ins_seg
+            timer = pyutils.Timer('step.make_ins_seg_labels:')
+            step.make_ins_seg_labels.run(args)
 
-        timer = pyutils.Timer('step.eval_ins_seg:')
-        step.eval_ins_seg.run(args)
+        if args.eval_ins_seg_pass is True:
+            import step.eval_ins_seg
 
-    if args.make_sem_seg_pass is True:
-        import step.make_sem_seg_labels
+            timer = pyutils.Timer('step.eval_ins_seg:')
+            step.eval_ins_seg.run(args)
 
-        timer = pyutils.Timer('step.make_sem_seg_labels:')
-        step.make_sem_seg_labels.run(args)
+        if args.make_sem_seg_pass is True:
+            import step.make_sem_seg_labels
 
-    if args.eval_sem_seg_pass is True:
-        import step.eval_sem_seg
+            timer = pyutils.Timer('step.make_sem_seg_labels:')
+            step.make_sem_seg_labels.run(args)
 
-        timer = pyutils.Timer('step.eval_sem_seg:')
-        step.eval_sem_seg.run(args)
+        if args.eval_sem_seg_pass is True:
+            import step.eval_sem_seg
 
+            timer = pyutils.Timer('step.eval_sem_seg:')
+            step.eval_sem_seg.run(args)
+        
+        shutil.move("./result", "../jakeresults/irnet-result-" + i)        
+        shutil.move("./sample_train_eval.log", "../jakeresults/irnet-result-" + i)   
